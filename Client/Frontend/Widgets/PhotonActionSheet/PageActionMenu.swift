@@ -193,6 +193,17 @@ extension PhotonActionSheetProtocol {
             }
             refreshActions.append(toggleTP)
         }
+    
+        let zoomIn = PhotonActionSheetItem(title: "Zoom In", isEnabled: tab.pageZoom == 3.0 ? false : true) { _, _ in
+            tab.zoomIn()
+        }
+
+        let zoomLevel = PhotonActionSheetItem(title: String(format: "%.0f%%", tab.pageZoom * 100.0), isEnabled: false) { _, _ in }
+
+        let zoomOut = PhotonActionSheetItem(title: "Zoom Out", isEnabled: tab.pageZoom == 0.5 ? false : true) { _, _ in
+            tab.zoomOut()
+        }
+        let zoomActions = [zoomOut, zoomLevel, zoomIn]
         
         var mainActions = [sharePage]
 
@@ -221,6 +232,7 @@ extension PhotonActionSheetProtocol {
                 reportSiteIssue()
             }
             commonActions.insert(reportSiteIssueAction, at: 0)
+            mainActions.append(contentsOf: zoomActions)
         }
 
         if shouldShowNewTabButton && tab.readerModeAvailableOrActive {

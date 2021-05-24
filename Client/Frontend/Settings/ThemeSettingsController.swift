@@ -127,8 +127,10 @@ class ThemeSettingsController: ThemedTableViewController {
     @objc func systemThemeSwitchValueChanged(control: UISwitch) {
         ThemeManager.instance.systemThemeIsOn = control.isOn
         if #available(iOS 13.0, *) {
-            let userInterfaceStyle = traitCollection.userInterfaceStyle
             if control.isOn {
+                // Reset the user interface style to the default before choosing our theme
+                UIApplication.shared.delegate?.window??.overrideUserInterfaceStyle = .unspecified
+                let userInterfaceStyle = traitCollection.userInterfaceStyle
                 ThemeManager.instance.current = userInterfaceStyle == .dark ? DarkTheme() : NormalTheme()
             } else if ThemeManager.instance.automaticBrightnessIsOn {
                 ThemeManager.instance.updateCurrentThemeBasedOnScreenBrightness()

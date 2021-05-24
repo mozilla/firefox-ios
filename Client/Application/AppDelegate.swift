@@ -137,6 +137,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIViewControllerRestorati
             }
         }
 
+        if #available(iOS 13.0, *) {
+            NotificationCenter.default.addObserver(forName: .DisplayThemeChanged, object: nil, queue: .main) { (notification) -> Void in
+                if !ThemeManager.instance.systemThemeIsOn {
+                    self.window?.overrideUserInterfaceStyle = ThemeManager.instance.userInterfaceStyle
+                } else {
+                    self.window?.overrideUserInterfaceStyle = .unspecified
+                }
+            }
+        }
+
         self.updateAuthenticationInfo()
         SystemUtils.onFirstRun()
 
@@ -149,6 +159,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIViewControllerRestorati
 
     // TODO: Move to scene controller for iOS 13
     private func setupRootViewController() {
+        if #available(iOS 13.0, *), !ThemeManager.instance.systemThemeIsOn {
+            self.window?.overrideUserInterfaceStyle = ThemeManager.instance.userInterfaceStyle
+        }
+
         browserViewController = BrowserViewController(profile: self.profile!, tabManager: self.tabManager)
         browserViewController.edgesForExtendedLayout = []
 

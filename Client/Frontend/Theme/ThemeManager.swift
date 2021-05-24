@@ -53,9 +53,7 @@ class ThemeManager {
     // UIViewControllers / UINavigationControllers need to have `preferredStatusBarStyle` and call this.
     var statusBarStyle: UIStatusBarStyle {
         if #available(iOS 13.0, *) {
-            if UIScreen.main.traitCollection.userInterfaceStyle == .dark && currentName == .normal {
-                return .darkContent
-            }
+            return .default
         }
 
         return currentName == .dark ? .lightContent : .default

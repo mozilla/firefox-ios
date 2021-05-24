@@ -110,8 +110,6 @@ class ChronologicalTabsViewController: UIViewController, Themeable, TabTrayViewD
 
     func applyTheme() {
         if #available(iOS 13.0, *) {
-            overrideUserInterfaceStyle = ThemeManager.instance.userInterfaceStyle
-            bottomSheetVC?.overrideUserInterfaceStyle = ThemeManager.instance.userInterfaceStyle
             tableView.backgroundColor = UIColor.systemGroupedBackground
             emptyPrivateTabsView.titleLabel.textColor = UIColor.label
             emptyPrivateTabsView.descriptionLabel.textColor = UIColor.secondaryLabel

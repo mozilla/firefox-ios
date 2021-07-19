@@ -286,9 +286,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIViewControllerRestorati
             }
         }
         updateSessionCount()
+        setStateForUITesting()
 
         return shouldPerformAdditionalDelegateHandling
     }
+
+    static var isUITestingEnabled: Bool {
+            get {
+                return ProcessInfo.processInfo.arguments.contains("--Reset")
+            }
+        }
+
+        private func setStateForUITesting() {
+            if AppDelegate.isUITestingEnabled {
+                // If you need reset your app to clear state
+                UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
+
+                // To speed up your tests
+                UIApplication.shared.keyWindow?.layer.speed = 200
+                UIView.setAnimationsEnabled(false)
+            }
+        }
 
     func updateSessionCount() {
         var sessionCount: Int32 = 0

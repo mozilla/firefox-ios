@@ -87,6 +87,37 @@ class FirefoxAccountSignInViewController: UIViewController {
         button.titleLabel?.font = DynamicFontHelper().MediumSizeBoldFontAS
         return button
     }()
+    
+    lazy var createAccountButton: UILabel = {
+       let label = UILabel()
+        let space = NSAttributedString(string: " ")
+        let text = NSMutableAttributedString(string: Strings.FxASignin_CreateAccountPt1)
+        let createOne = NSAttributedString(string: Strings.FxASignin_CreateAccountPt2, attributes: [.foregroundColor: UIColor.Photon.Blue50])
+        let rest = NSAttributedString(string: Strings.FxASignin_CreateAccountPt3)
+        text.append(space)
+        text.append(createOne)
+        text.append(space)
+        text.append(rest)
+        
+        let font = DynamicFontHelper().DefaultSmallFontBold
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 4
+        text.addAttributes([.paragraphStyle: paragraphStyle], range: NSMakeRange(0, text.length))
+
+        label.textColor = UIColor.Photon.Grey80
+        label.attributedText = text
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.font = DynamicFontHelper().DefaultSmallFontBold
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(createAccountTapped))
+        label.addGestureRecognizer(tapGesture)
+        label.isUserInteractionEnabled = true
+        
+        return label
+    }()
+    
+    lazy var scrollView = UIScrollView()
             
     private let profile: Profile
     
@@ -144,16 +175,23 @@ class FirefoxAccountSignInViewController: UIViewController {
     // MARK: Subview Layout Functions
     
     func addSubviews() {
-        view.addSubview(qrSignInLabel)
-        view.addSubview(pairImageView)
-        view.addSubview(instructionsLabel)
-        view.addSubview(scanButton)
-        view.addSubview(emailButton)
+        scrollView.addSubview(qrSignInLabel)
+        scrollView.addSubview(pairImageView)
+        scrollView.addSubview(instructionsLabel)
+        scrollView.addSubview(scanButton)
+        scrollView.addSubview(emailButton)
+        scrollView.addSubview(createAccountButton)
+        
+        view.addSubview(scrollView)
     }
     
     func addViewConstraints() {
+        scrollView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
         qrSignInLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.snp_topMargin).offset(50)
+            make.top.equalTo(scrollView.snp_topMargin).offset(50)
             make.centerX.equalToSuperview()
             make.width.equalToSuperview()
         }
@@ -179,6 +217,12 @@ class FirefoxAccountSignInViewController: UIViewController {
             make.centerX.equalToSuperview()
             make.width.equalTo(327)
             make.height.equalTo(44)
+        }
+        createAccountButton.snp.makeConstraints { make in
+            make.top.equalTo(emailButton.snp.bottomMargin).offset(40)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(emailButton.snp.width).multipliedBy(0.8)
+            make.bottom.equalTo(scrollView.snp.bottom).offset(-20)
         }
     }
     
@@ -207,6 +251,12 @@ class FirefoxAccountSignInViewController: UIViewController {
             self?.dismissVC()
         }
         TelemetryWrapper.recordEvent(category: .firefoxAccount, method: .qrPairing, object: telemetryObject, extras: ["flow_type": "email"])
+        navigationController?.pushViewController(fxaWebVC, animated: true)
+    }
+    
+    @objc func createAccountTapped(_ sender: UITapGestureRecognizer) {
+        let fxaWebVC = FxAWebViewController(pageType: .emailLoginFlow, profile: profile, dismissalStyle: fxaDismissStyle, deepLinkParams: deepLinkParams)
+        TelemetryWrapper.recordEvent(category: .firefoxAccount, method: .qrPairing, object: telemetryObject, extras: ["flow_type": "create"])
         navigationController?.pushViewController(fxaWebVC, animated: true)
     }
 }
